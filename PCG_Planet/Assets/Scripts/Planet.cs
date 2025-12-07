@@ -22,6 +22,10 @@ public class Planet : MonoBehaviour
     List<Polygon> m_Polygons;
     List<Vector3> m_Vertices;
 
+    public GameObject playerPrefab;
+    public PolySet m_LandPolygons;
+
+
     public void Start()
     {
         // Create an icosahedron, subdivide it three times so that we have a lot of polygons to work with
@@ -117,9 +121,25 @@ public class Planet : MonoBehaviour
 
 
         if (m_GroundMesh != null)
+        {
             Destroy(m_GroundMesh);
+        }
 
         m_GroundMesh = GenerateMesh("Ground Mesh", m_GroundMaterial);
+
+        // Add MeshCollider to planet
+        MeshCollider collider = m_GroundMesh.AddComponent<MeshCollider>();
+        collider.sharedMesh = m_GroundMesh.GetComponent<MeshFilter>().mesh;
+        collider.convex = false;
+
+        PlanetSurface surface = m_GroundMesh.AddComponent<PlanetSurface>();
+        surface.planet = this;
+
+        Rigidbody rb = gameObject.AddComponent<Rigidbody>();
+        rb.useGravity = false;      // Planet shouldn't fall
+        rb.isKinematic = true;      // Planet shouldn't move
+
+        SpawnPlayer();
     }
 
     public void InitAsIcosohedron()
@@ -428,4 +448,34 @@ public class Planet : MonoBehaviour
 
         return meshObject;
     }
+    public void GetRandomSurfacePoint(out Vector3 position, out Vector3 normal)
+    {
+        // Pick any polygon
+        int index = Random.Range(0, m_Polygons.Count);
+        Polygon p = m_Polygons[index];
+
+        // Use the polygon center
+        Vector3 a = m_Vertices[p.m_Vertices[0]];
+        Vector3 b = m_Vertices[p.m_Vertices[1]];
+        Vector3 c = m_Vertices[p.m_Vertices[2]];
+
+        position = (a + b + c) / 3f;
+
+        // The natural normal for the planet
+        normal = position.normalized;
+    }
+    void SpawnPlayer()
+    {
+        GetRandomSurfacePoint(out Vector3 pos, out Vector3 normal);
+
+        Vector3 spawnPos = pos + normal * 0.2f;        // slightly above ground
+        Quaternion spawnRot = Quaternion.FromToRotation(Vector3.up, normal);
+
+        GameObject player = Instantiate(playerPrefab, spawnPos, spawnRot);
+
+        // Assign planet to the walker
+        PlanetWalker walker = player.GetComponent<PlanetWalker>();
+        walker.planet = this.transform;
+    }
+
 }
