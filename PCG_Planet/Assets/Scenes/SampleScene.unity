@@ -258,7 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MouseDragSensitivity: 200
   m_MouseZoomSensitivity: 2
-  m_MinZoom: 0
+  m_MinZoom: 1
   m_MaxZoom: 10
 --- !u!20 &282840813
 Camera:
@@ -270,7 +270,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0.12106918, b: 0.31132078, a: 0}
+  m_BackGroundColor: {r: 0.038597327, g: 0.08120168, b: 0.14716971, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -363,6 +363,8 @@ MonoBehaviour:
   m_NumberOfHills: 10
   m_HillSizeMax: 0.2
   m_HillSizeMin: 0.1
+  playerPrefab: {fileID: 2002205927323630487, guid: 514c26dec26743c419fce54fe4e91d96,
+    type: 3}
 --- !u!4 &365555217
 Transform:
   m_ObjectHideFlags: 0
