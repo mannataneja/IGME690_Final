@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 
 public class Planet : MonoBehaviour
 {
@@ -139,7 +139,12 @@ public class Planet : MonoBehaviour
         rb.useGravity = false;      // Planet shouldn't fall
         rb.isKinematic = true;      // Planet shouldn't move
 
-        SpawnPlayer();
+        m_LandPolygons = landPolys;
+
+        PolySet interiorLandPolygons = landPolys.RemoveEdges();
+
+        SpawnPlayerOnContinent(interiorLandPolygons);
+        //SpawnPlayer();
     }
 
     public void InitAsIcosohedron()
@@ -464,7 +469,7 @@ public class Planet : MonoBehaviour
         // The natural normal for the planet
         normal = position.normalized;
     }
-    void SpawnPlayer()
+/*    void SpawnPlayer()
     {
         GetRandomSurfacePoint(out Vector3 pos, out Vector3 normal);
 
@@ -476,6 +481,104 @@ public class Planet : MonoBehaviour
         // Assign planet to the walker
         PlanetWalker walker = player.GetComponent<PlanetWalker>();
         walker.planet = this.transform;
+    }*/
+    public Polygon GetPolygonFromTriangleIndex(int triangleIndex)
+    {
+        if (triangleIndex < 0 || triangleIndex >= m_Polygons.Count)
+            return null;
+
+        return m_Polygons[triangleIndex];
+    }
+
+    Polygon GetRandomPolygonFromSet(PolySet polySet)
+    {
+        if (polySet == null || polySet.Count == 0)
+            return null;
+
+        int index = Random.Range(0, polySet.Count);
+        int i = 0;
+        foreach (Polygon polygon in polySet)
+        {
+            if (i == index)
+                return polygon;
+            i++;
+        }
+        return null;
+    }
+
+    HashSet<Polygon> GetContinentForPolygon(Polygon seedPolygon, PolySet landSet)
+    {
+        var continent = new HashSet<Polygon>();
+        if (seedPolygon == null || landSet == null || !landSet.Contains(seedPolygon))
+            return continent;
+
+        var stack = new Stack<Polygon>();
+        stack.Push(seedPolygon);
+        continent.Add(seedPolygon);
+
+        while (stack.Count > 0)
+        {
+            Polygon current = stack.Pop();
+
+            foreach (Polygon neighbor in current.m_Neighbors)
+            {
+                if (!landSet.Contains(neighbor))
+                    continue;
+
+                if (continent.Add(neighbor))
+                    stack.Push(neighbor);
+            }
+        }
+
+        return continent;
+    }
+
+    void GetSurfacePointForPolygon(Polygon polygon, out Vector3 position, out Vector3 normal)
+    {
+        Vector3 a = m_Vertices[polygon.m_Vertices[0]];
+        Vector3 b = m_Vertices[polygon.m_Vertices[1]];
+        Vector3 c = m_Vertices[polygon.m_Vertices[2]];
+
+        position = (a + b + c) / 3f;
+        normal = position.normalized;
+    }
+
+    void SpawnPlayerOnContinent(PolySet interiorLandPolygons)
+    {
+        if (playerPrefab == null)
+        {
+            Debug.LogWarning("Planet: No player prefab assigned.");
+            return;
+        }
+
+        // Pick a random interior land polygon for spawn
+        Polygon spawnPolygon = GetRandomPolygonFromSet(interiorLandPolygons);
+        if (spawnPolygon == null)
+        {
+            Debug.LogWarning("Planet: No interior land polygons to spawn on.");
+            return;
+        }
+
+        // Compute continent (all connected land polygons)
+        HashSet<Polygon> allowedContinentPolygons = GetContinentForPolygon(spawnPolygon, m_LandPolygons);
+
+        // Compute spawn position + rotation
+        GetSurfacePointForPolygon(spawnPolygon, out Vector3 surfacePosition, out Vector3 surfaceNormal);
+
+        Vector3 spawnPosition = surfacePosition + surfaceNormal * 0.2f;
+        Quaternion spawnRotation = Quaternion.FromToRotation(Vector3.up, surfaceNormal);
+
+        //Instantiate player
+        GameObject playerInstance = Instantiate(playerPrefab, spawnPosition, spawnRotation);
+
+        PlanetWalker walker = playerInstance.GetComponent<PlanetWalker>();
+        if (walker == null)
+        {
+            Debug.LogWarning("Planet: Player prefab has no PlanetWalker component.");
+            return;
+        }
+
+        walker.Initialize(this, allowedContinentPolygons);
     }
 
 }
