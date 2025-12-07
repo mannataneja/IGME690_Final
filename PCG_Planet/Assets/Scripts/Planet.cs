@@ -25,6 +25,10 @@ public class Planet : MonoBehaviour
     public GameObject playerPrefab;
     public PolySet m_LandPolygons;
 
+    public GameObject m_BoatPrefab;   
+    public PolySet m_OceanPolygons;
+
+
 
     public void Start()
     {
@@ -142,9 +146,13 @@ public class Planet : MonoBehaviour
         m_LandPolygons = landPolys;
 
         PolySet interiorLandPolygons = landPolys.RemoveEdges();
+        m_OceanPolygons = oceanPolys;
 
-        SpawnPlayerOnContinent(interiorLandPolygons);
+        //SpawnPlayerOnContinent(interiorLandPolygons);
         //SpawnPlayer();
+
+        SpawnBoatOnOcean(m_OceanPolygons);
+
     }
 
     public void InitAsIcosohedron()
@@ -579,6 +587,43 @@ public class Planet : MonoBehaviour
         }
 
         walker.Initialize(this, allowedContinentPolygons);
+    }
+    public void SpawnBoatOnOcean(PolySet oceanSet)
+    {
+        if (m_BoatPrefab == null)
+        {
+            Debug.LogWarning("No boat prefab assigned.");
+            return;
+        }
+
+        // 1. Pick a random ocean polygon
+        Polygon spawnPoly = GetRandomPolygonFromSet(oceanSet);
+        if (spawnPoly == null)
+        {
+            Debug.LogWarning("Could not find an ocean polygon to spawn boat.");
+            return;
+        }
+
+        // 2. Compute the entire connected ocean region
+        HashSet<Polygon> allowedRegion = GetContinentForPolygon(spawnPoly, oceanSet);
+
+        // 3. Convert polygon to world position + normal
+        GetSurfacePointForPolygon(spawnPoly,
+            out Vector3 pos,
+            out Vector3 normal);
+
+        Vector3 spawnPos = pos + normal * 0.2f;   // slight height offset
+        Quaternion spawnRot = Quaternion.LookRotation(Vector3.ProjectOnPlane(Vector3.forward, normal), normal);
+
+        // 4. Spawn boat
+        GameObject boat = Instantiate(m_BoatPrefab, spawnPos, spawnRot);
+
+        // 5. Initialize boat controller
+        BoatController bc = boat.GetComponent<BoatController>();
+        if (bc != null)
+            bc.Initialize(this, allowedRegion);
+        else
+            Debug.LogWarning("Boat prefab is missing BoatController component.");
     }
 
 }
