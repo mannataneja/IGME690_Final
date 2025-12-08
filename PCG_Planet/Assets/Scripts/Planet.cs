@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Planet : MonoBehaviour
 {
@@ -29,9 +30,20 @@ public class Planet : MonoBehaviour
 
     public PolySet m_LandPolygons;
 
+    public Slider continentsNumhberSlider;
+    public Slider continentSizeSlider;
+    public Slider hillNumberSlider;
+    public Slider hillSizeSlider;
 
     public void Start()
     {
+        m_NumberOfContinents = (int)continentsNumhberSlider.value;
+        m_ContinentSizeMin = (float)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
+        m_ContinentSizeMax = (float)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
+        m_NumberOfHills = (int)hillNumberSlider.value;
+        m_HillSizeMin = (float)(hillNumberSlider.value - hillNumberSlider.value * 0.5);
+        m_HillSizeMax = (float)(hillNumberSlider.value + hillNumberSlider.value * 0.5);
+
         SetUpRigidBody();
         GeneratePlanet();
     }
@@ -506,4 +518,26 @@ public class Planet : MonoBehaviour
         GeneratePlanet();
     }
 
+    public void OnNumberOfContinentsChanged()
+    {
+        m_NumberOfContinents = (int)continentsNumhberSlider.value;
+        Regenerate();
+    }
+    public void OnContinentSizeChnaged()
+    {
+        m_ContinentSizeMin = (int)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
+        m_ContinentSizeMax = (int)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
+        Regenerate();
+    }
+    public void OnNumberOfHillsChanged()
+    {
+        m_NumberOfHills = (int)hillNumberSlider.value;
+        Regenerate();
+    }
+    public void OnHillSizeChanged()
+    {
+        m_HillSizeMin = (int)(hillNumberSlider.value - hillNumberSlider.value * 0.5);
+        m_HillSizeMax = (int)(hillNumberSlider.value + hillNumberSlider.value * 0.5);
+        Regenerate();
+    }
 }
