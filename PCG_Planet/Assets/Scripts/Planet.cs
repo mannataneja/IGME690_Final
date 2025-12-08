@@ -529,12 +529,10 @@ public class Planet : MonoBehaviour
     public void OnNumberOfContinentsChanged()
     {
         m_NumberOfContinents = (int)continentsNumhberSlider.value;
-        Regenerate();
     }
     public void OnContinentSizeChnaged()
     {
         m_ContinentSizeMin = (float)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
         m_ContinentSizeMax = (float)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
-        Regenerate();
     }
 }

@@ -50,4 +50,9 @@ public class CameraController : MonoBehaviour
 
         m_PrevMousePosition = currentMousePosition;
     }
+    public void Reorient()
+    {
+        transform.position = new Vector3(0, 0, 0);
+        transform.rotation = Quaternion.identity;
+    }
 }

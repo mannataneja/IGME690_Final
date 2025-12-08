@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 778812425849436640}
   - component: {fileID: 8108409403888340610}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Spaceship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 2772888432781746187}
   - component: {fileID: 3744524576345079569}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Disc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -314,7 +314,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 0
-  m_Color: {r: 0.88594866, g: 0, b: 1, a: 1}
+  m_Color: {r: 0.88594866, g: 0.1882353, b: 1, a: 1}
   m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 50
