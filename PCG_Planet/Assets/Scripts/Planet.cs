@@ -13,10 +13,6 @@ public class Planet : MonoBehaviour
     public float m_ContinentSizeMax   = 1.0f;
     public float m_ContinentSizeMin   = 0.1f;
 
-    public int   m_NumberOfHills = 5;
-    public float m_HillSizeMax   = 1.0f;
-    public float m_HillSizeMin   = 0.1f;
-
     GameObject m_GroundMesh;
     GameObject m_OceanMesh;
 
@@ -40,9 +36,6 @@ public class Planet : MonoBehaviour
         m_NumberOfContinents = (int)continentsNumhberSlider.value;
         m_ContinentSizeMin = (float)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
         m_ContinentSizeMax = (float)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
-        m_NumberOfHills = (int)hillNumberSlider.value;
-        m_HillSizeMin = (float)(hillNumberSlider.value - hillNumberSlider.value * 0.5);
-        m_HillSizeMax = (float)(hillNumberSlider.value + hillNumberSlider.value * 0.5);
 
         SetUpRigidBody();
         GeneratePlanet();
@@ -525,19 +518,8 @@ public class Planet : MonoBehaviour
     }
     public void OnContinentSizeChnaged()
     {
-        m_ContinentSizeMin = (int)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
-        m_ContinentSizeMax = (int)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
-        Regenerate();
-    }
-    public void OnNumberOfHillsChanged()
-    {
-        m_NumberOfHills = (int)hillNumberSlider.value;
-        Regenerate();
-    }
-    public void OnHillSizeChanged()
-    {
-        m_HillSizeMin = (int)(hillNumberSlider.value - hillNumberSlider.value * 0.5);
-        m_HillSizeMax = (int)(hillNumberSlider.value + hillNumberSlider.value * 0.5);
+        m_ContinentSizeMin = (float)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
+        m_ContinentSizeMax = (float)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
         Regenerate();
     }
 }
