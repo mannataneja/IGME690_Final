@@ -6,27 +6,42 @@ public class PlanetWalker : MonoBehaviour
     public float moveSpeed = 5f;
     public float gravityStrength = 20f;
     public float rotationSpeed = 10f;
+    public float offsetAboveSurface = 2f;
 
     Rigidbody rb;
+    float baseRadius;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
-        rb.freezeRotation = true;  
+        rb.freezeRotation = true;
+
+        Vector3 center = planet.position;
+        baseRadius = (transform.position - center).magnitude;
     }
 
     void FixedUpdate()
     {
-        Vector3 planetCenter = planet.position;
+        Vector3 center = planet.position;
 
-        Vector3 up = (transform.position - planetCenter).normalized;
+        Vector3 fromCenter = transform.position - center;
+        Vector3 up = fromCenter.normalized;
+        Vector3 inward = -up;
 
-        Vector3 gravityDir = -up; // inward
-        rb.AddForce(gravityDir * gravityStrength, ForceMode.Acceleration);
+        rb.AddForce(inward * gravityStrength, ForceMode.Acceleration);
 
-        Quaternion targetRot = Quaternion.FromToRotation(transform.up, up) * transform.rotation;
-        rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, rotationSpeed * Time.deltaTime));
+        float targetRadius = baseRadius + offsetAboveSurface;
+        Vector3 desiredPos = center + up * targetRadius;
+
+        rb.position = desiredPos;
+
+        Quaternion targetRot =
+            Quaternion.FromToRotation(transform.up, up) * transform.rotation;
+
+        rb.MoveRotation(
+            Quaternion.Slerp(rb.rotation, targetRot, rotationSpeed * Time.deltaTime)
+        );
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -34,8 +49,11 @@ public class PlanetWalker : MonoBehaviour
         Vector3 forward = Vector3.Cross(transform.right, up).normalized;
         Vector3 right = Vector3.Cross(up, forward).normalized;
 
-        Vector3 moveDir = (forward * v + right * h).normalized;
+        Vector3 moveDir = (forward * v + right * h);
 
-        rb.MovePosition(rb.position + moveDir * moveSpeed * Time.deltaTime);
+        if (moveDir.sqrMagnitude < 0.001f)
+            rb.linearVelocity = Vector3.zero;
+        else
+            rb.linearVelocity = moveDir.normalized * moveSpeed;
     }
 }

@@ -23,6 +23,8 @@ public class Planet : MonoBehaviour
     List<Vector3> m_Vertices;
 
     public GameObject playerPrefab;
+    GameObject currentPlayer;
+
     public PolySet m_LandPolygons;
 
 
@@ -471,10 +473,10 @@ public class Planet : MonoBehaviour
         Vector3 spawnPos = pos + normal * 0.2f;        // slightly above ground
         Quaternion spawnRot = Quaternion.FromToRotation(Vector3.up, normal);
 
-        GameObject player = Instantiate(playerPrefab, spawnPos, spawnRot);
+        currentPlayer = Instantiate(playerPrefab, spawnPos, spawnRot);
 
         // Assign planet to the walker
-        PlanetWalker walker = player.GetComponent<PlanetWalker>();
+        PlanetWalker walker = currentPlayer.GetComponent<PlanetWalker>();
         walker.planet = this.transform;
     }
 
