@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class Planet : MonoBehaviour
 {
@@ -22,6 +22,8 @@ public class Planet : MonoBehaviour
     List<Polygon> m_Polygons;
     List<Vector3> m_Vertices;
 
+    Rigidbody rb;
+
     public GameObject playerPrefab;
     GameObject currentPlayer;
 
@@ -30,6 +32,24 @@ public class Planet : MonoBehaviour
 
     public void Start()
     {
+        SetUpRigidBody();
+        GeneratePlanet();
+    }
+
+    private void SetUpRigidBody()
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+
+        if (rb == null)
+            rb = gameObject.AddComponent<Rigidbody>();
+
+        rb.useGravity = false;
+        rb.isKinematic = true;
+    }
+
+    private void GeneratePlanet()
+    {
         // Create an icosahedron, subdivide it three times so that we have a lot of polygons to work with
 
         InitAsIcosohedron();
@@ -37,10 +57,10 @@ public class Planet : MonoBehaviour
 
         CalculateNeighbors();
 
-        Color32 colorOcean     = new Color32(  0,  80, 220,   0);
-        Color32 colorGrass     = new Color32(  0, 220,   0,   0);
-        Color32 colorDirt      = new Color32(180, 140,  20,   0);
-        Color32 colorDeepOcean = new Color32(  0,  40, 110,   0);
+        Color32 colorOcean = new Color32(0, 80, 220, 0);
+        Color32 colorGrass = new Color32(0, 220, 0, 0);
+        Color32 colorDirt = new Color32(180, 140, 20, 0);
+        Color32 colorDeepOcean = new Color32(0, 40, 110, 0);
 
         foreach (Polygon p in m_Polygons)
             p.m_Color = colorOcean;
@@ -52,7 +72,7 @@ public class Planet : MonoBehaviour
 
         // Grab polygons that are inside random spheres
 
-        for(int i = 0; i < m_NumberOfContinents; i++)
+        for (int i = 0; i < m_NumberOfContinents; i++)
         {
             float continentSize = Random.Range(m_ContinentSizeMin, m_ContinentSizeMax);
 
@@ -136,10 +156,6 @@ public class Planet : MonoBehaviour
 
         PlanetSurface surface = m_GroundMesh.AddComponent<PlanetSurface>();
         surface.planet = this;
-
-        Rigidbody rb = gameObject.AddComponent<Rigidbody>();
-        rb.useGravity = false;      // Planet shouldn't fall
-        rb.isKinematic = true;      // Planet shouldn't move
 
         SpawnPlayer();
     }
@@ -478,6 +494,16 @@ public class Planet : MonoBehaviour
         // Assign planet to the walker
         PlanetWalker walker = currentPlayer.GetComponent<PlanetWalker>();
         walker.planet = this.transform;
+    }
+    public void Regenerate()
+    {
+        if (currentPlayer != null)
+            Destroy(currentPlayer);
+
+        if (m_GroundMesh != null) Destroy(m_GroundMesh);
+        if (m_OceanMesh != null) Destroy(m_OceanMesh);
+
+        GeneratePlanet();
     }
 
 }
