@@ -26,6 +26,9 @@ public class Planet : MonoBehaviour
 
     public PolySet m_LandPolygons;
 
+    public float rotationSpeed = 10f;
+    public Vector3 rotationAxis = Vector3.up;
+
     public Slider continentsNumhberSlider;
     public Slider continentSizeSlider;
     public Slider hillNumberSlider;
@@ -39,6 +42,11 @@ public class Planet : MonoBehaviour
 
         SetUpRigidBody();
         GeneratePlanet();
+    }
+
+    void Update()
+    {
+        transform.Rotate(rotationAxis, rotationSpeed * Time.deltaTime, Space.Self);
     }
 
     private void SetUpRigidBody()
@@ -487,16 +495,23 @@ public class Planet : MonoBehaviour
         // The natural normal for the planet
         normal = position.normalized;
     }
+    public void GetTopSurfacePoint(out Vector3 position, out Vector3 normal)
+    {
+        normal = transform.up.normalized;
+
+        float radius = m_Vertices[0].magnitude;
+
+        position = transform.position + normal * radius;
+    }
     void SpawnPlayer()
     {
-        GetRandomSurfacePoint(out Vector3 pos, out Vector3 normal);
+        GetTopSurfacePoint(out Vector3 pos, out Vector3 normal);
 
         Vector3 spawnPos = pos + normal * 0.2f;        // slightly above ground
         Quaternion spawnRot = Quaternion.FromToRotation(Vector3.up, normal);
 
         currentPlayer = Instantiate(playerPrefab, spawnPos, spawnRot);
 
-        // Assign planet to the walker
         PlanetWalker walker = currentPlayer.GetComponent<PlanetWalker>();
         walker.planet = this.transform;
     }
