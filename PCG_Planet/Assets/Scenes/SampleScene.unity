@@ -789,10 +789,8 @@ MonoBehaviour:
     type: 3}
   rotationSpeed: 10
   rotationAxis: {x: 0, y: 1, z: 0}
-  continentsNumhberSlider: {fileID: 1347728205}
+  continentsNumberSlider: {fileID: 1347728205}
   continentSizeSlider: {fileID: 378572449}
-  hillNumberSlider: {fileID: 0}
-  hillSizeSlider: {fileID: 0}
 --- !u!4 &365555217
 Transform:
   m_ObjectHideFlags: 0

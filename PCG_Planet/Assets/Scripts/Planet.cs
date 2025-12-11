@@ -29,14 +29,13 @@ public class Planet : MonoBehaviour
     public float rotationSpeed = 10f;
     public Vector3 rotationAxis = Vector3.up;
 
-    public Slider continentsNumhberSlider;
+    public Slider continentsNumberSlider;
     public Slider continentSizeSlider;
-    public Slider hillNumberSlider;
-    public Slider hillSizeSlider;
+
 
     public void Start()
     {
-        m_NumberOfContinents = (int)continentsNumhberSlider.value;
+        m_NumberOfContinents = (int)continentsNumberSlider.value;
         m_ContinentSizeMin = (float)(continentSizeSlider.value - continentSizeSlider.value * 0.5);
         m_ContinentSizeMax = (float)(continentSizeSlider.value + continentSizeSlider.value * 0.5);
 
@@ -533,7 +532,7 @@ public class Planet : MonoBehaviour
 
     public void OnNumberOfContinentsChanged()
     {
-        m_NumberOfContinents = (int)continentsNumhberSlider.value;
+        m_NumberOfContinents = (int)continentsNumberSlider.value;
     }
     public void OnContinentSizeChnaged()
     {
