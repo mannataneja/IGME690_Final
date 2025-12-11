@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlanetWalker : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public Transform planet;
     public float moveSpeed = 5f;
@@ -36,12 +36,9 @@ public class PlanetWalker : MonoBehaviour
 
         rb.position = desiredPos;
 
-        Quaternion targetRot =
-            Quaternion.FromToRotation(transform.up, up) * transform.rotation;
+        Quaternion targetRot = Quaternion.FromToRotation(transform.up, up) * transform.rotation;
 
-        rb.MoveRotation(
-            Quaternion.Slerp(rb.rotation, targetRot, rotationSpeed * Time.deltaTime)
-        );
+        rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRot, rotationSpeed * Time.deltaTime));
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -52,8 +49,12 @@ public class PlanetWalker : MonoBehaviour
         Vector3 moveDir = (forward * v + right * h);
 
         if (moveDir.sqrMagnitude < 0.001f)
+        {
             rb.linearVelocity = Vector3.zero;
+        }
         else
+        {
             rb.linearVelocity = moveDir.normalized * moveSpeed;
+        }
     }
 }

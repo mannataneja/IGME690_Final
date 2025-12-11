@@ -76,7 +76,10 @@ public class Planet : MonoBehaviour
         Color32 colorDeepOcean = new Color32(0, 40, 110, 0);
 
         foreach (Polygon p in m_Polygons)
+        {
             p.m_Color = colorOcean;
+
+        }
 
         // Make land by generating randomly sized spheres on the surface of the planet and adding any Polygon that falls inside that sphere
 
@@ -111,7 +114,9 @@ public class Planet : MonoBehaviour
         sides.ApplyAmbientOcclusionTerm(1.0f, 0.0f);
 
         if (m_OceanMesh != null)
+        {
             Destroy(m_OceanMesh);
+        }
 
         m_OceanMesh = GenerateMesh("Ocean Surface", m_OceanMaterial);
 
@@ -512,7 +517,7 @@ public class Planet : MonoBehaviour
 
         currentPlayer = Instantiate(playerPrefab, spawnPos, spawnRot);
 
-        PlanetWalker walker = currentPlayer.GetComponent<PlanetWalker>();
+        PlayerController walker = currentPlayer.GetComponent<PlayerController>();
         walker.planet = this.transform;
     }
     public void Regenerate()
